@@ -1,0 +1,17 @@
+occ_colombia <- rgbif::occ_search(country = "CO",
+                                  elevation = '0,1500',
+                                  kingdomKey = 5,
+                                  year = '2000',
+                                  limit = 99000 )
+occ_columbia <- occ_colombia$data
+
+for(i in as.character(2001:2022) ){
+  new_occ_colombia <- rgbif::occ_search(country = "CO",
+                                        elevation = '0,1500',
+                                        kingdomKey = 5,
+                                        year = i,
+                                        limit = 99000 )
+  new_occ_colombia <- new_occ_colombia$data
+  
+  occ_columbia <- rbind(occ_columbia, new_occ_colombia)
+}
