@@ -12,3 +12,5 @@ motus_df <- data$motus |>
 
 table(motus_df$trophicMode)
 write.csv(motus_df, "data/data_modified/motus_bosque_fung_annot_clean_agg_func.csv")
+
+blablablou
