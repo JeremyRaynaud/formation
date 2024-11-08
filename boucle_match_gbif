@@ -1,15 +1,37 @@
+list_occ_colombia <- list( read.csv( "gbif_colomb_year/gbif_colomb_2001.csv" ) )
+
+for (i in 1:24){
+  list_occ_colombia[i+1] <- list( read.csv( str_c("gbif_colomb_year/gbif_colomb_",as.character(2001:2024)[i],".csv") ) )
+}
+
+occ_colombia <- bind_rows(list_occ_colombia)
+
+occ_colombia$Taxonomy <- str_c(occ_colombia$kingdom, occ_colombia$phylum, occ_colombia$order, 
+                               occ_colombia$family, occ_colombia$genus, occ_colombia$acceptedScientificName, sep="_")
+
 tab_assign <- read.csv("tab_otu_func.csv")
 
-tab_assign$match_gbif_taxa <- NA
-tab_assign$match_gbif_rank <- NA
+tab_assign$Pred_no_species <- str_split_fixed(tab_assign$Prediction, " ", n=2)[,1]
+tab_assign$match_gbif_taxa <- "None"
+tab_assign$match_gbif_rank <- "None"
 
 for(i in 1:nrow(tab_assign)){
-  for(r in c("kingdom","phylum","order","family","genus","acceptedScientificName") ){
-    if( any(str_detect(occ_colombia[,r], tab_assign$Prediction[i]), na.rm=TRUE) ){
+  print(i)
+  for(r in c("kingdom","phylum","order","family","genus") ){
+    if( any(str_detect(occ_colombia[,r], tab_assign$Pred_no_species[i]), na.rm=TRUE) ){
       tab_assign$match_gbif_rank[i] <- r
-      match_gbif <- occ_colombia[,r][str_detect(occ_colombia[,r], tab_assign$Prediction[i])]
+      match_gbif <- occ_colombia[,r][str_detect(occ_colombia[,r], tab_assign$Pred_no_species[i])]
       tab_assign$match_gbif_taxa[i] <- match_gbif[!is.na(match_gbif)][1]
     }
+  }
+}
+
+occ_colombia$matched_ray <- FALSE
+for(i in 1:nrow(tab_assign)){
+  if(tab_assign$match_gbif_taxa[i]!="None"){
+    rk <- tab_assign$match_gbif_rank[i]
+    tx <- tab_assign$match_gbif_taxa[i]
+    occ_colombia$matched_ray[occ_colombia[,rk]==tx] <- TRUE
   }
 }
 
