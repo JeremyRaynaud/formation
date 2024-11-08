@@ -1,0 +1,9 @@
+library(dplyr)
+
+list_occ_colombia <- list( read.csv( "gbif_colomb_year/gbif_colomb_2001.csv" ) )
+
+for (i in 1:24){
+  list_occ_colombia[i+1] <- list( read.csv( str_c("gbif_colomb_year/gbif_colomb_",as.character(2001:2024)[i],".csv") ) )
+}
+
+occ_colombia <- bind_rows(list_occ_colombia)
