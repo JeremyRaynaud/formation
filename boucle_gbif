@@ -1,18 +1,19 @@
-
 occ_colombia <- rgbif::occ_search(country = "CO",
                                   elevation = '0,1500',
                                   kingdomKey = 5,
-                                  year = '2000',
-                                  limit = 100 )
-occ_colombia <- occ_colombia$data[,c("kingdom","phylum","order","family","genus","acceptedScientificName","basisOfRecord")]
+                                  year = 2000)
 
-for(i in as.character(2001:2022) ){
+occ_colombia <- occ_colombia$data[,c("kingdom","phylum","order","family","genus","acceptedScientificName","basisOfRecord", "decimalLatitude", "decimalLongitude")]
+
+for(i in as.character(2001:2024) ){
   new_occ_colombia <- rgbif::occ_search(country = "CO",
                                         elevation = '0,1500',
                                         kingdomKey = 5,
                                         year = i,
-                                        limit = 100 )
-  new_occ_colombia <- new_occ_colombia$data[,c("kingdom","phylum","order","family","genus","acceptedScientificName","basisOfRecord")]
+                                        limit = 35000,
+                                        hasCoordinate = TRUE)
+  
+  new_occ_colombia <- new_occ_colombia$data[,c("kingdom","phylum","order","family","genus","acceptedScientificName","basisOfRecord", "decimalLatitude", "decimalLongitude")]
   
   occ_colombia <- rbind(occ_colombia, new_occ_colombia)
   
