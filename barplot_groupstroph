@@ -1,0 +1,45 @@
+tab_assign <- read.csv("tab_otu_func.csv")
+
+tab_assign[,c("Saprotroph", "Pathotroph", "Symbiotroph")] <- NA
+tab_assign$Saprotroph <- str_detect(tab_assign$trophicMode, "Saprotroph")
+tab_assign$Pathotroph <- str_detect(tab_assign$trophicMode, "Pathotroph")
+tab_assign$Symbiotroph <- str_detect(tab_assign$trophicMode, "Symbiotroph")
+
+tab_assign$New_trophicMode <- str_c(tab_assign$Saprotroph, tab_assign$Pathotroph, tab_assign$Symbiotroph )
+tab_assign$New_trophicMode[is.na(tab_assign$New_trophicMode)] <- "Miss"
+
+tab_assign_grp <- tab_assign %>%
+  group_by(New_trophicMode) %>%
+  summarize(N_taxa=n())
+
+tab_assign_grp$New_trophicMode <- str_c(rank(tab_assign_grp$N_taxa),tab_assign_grp$New_trophicMode)
+
+lab_troph <- c("3FALSEFALSETRUE"="Symbiotroph", 
+               "2FALSETRUEFALSE"="Pathotroph", 
+               "1FALSETRUETRUE"="Pathotroph + Symbiotroph", 
+               "5Miss"="Missing",
+               "8TRUEFALSEFALSE"="Saprotroph", 
+               "4TRUEFALSETRUE"="Saprotroph + Symbiotroph", 
+               "7TRUETRUEFALSE"="Saprotroph + Pathotroph", 
+               "6TRUETRUETRUE"="Saprotroph + Pathotroph + Symbiotroph" )
+
+pal_troph <- c("3FALSEFALSETRUE"="#9F0162", 
+               "2FALSETRUEFALSE"="#009F81", 
+               "1FALSETRUETRUE"="#FF5AAF", 
+               "5Miss"="black",
+               "8TRUEFALSEFALSE"="#00FCCF", 
+               "4TRUEFALSETRUE"="#8400CD", 
+               "7TRUETRUEFALSE"="#008DF9", 
+               "6TRUETRUETRUE"="#FFB2FD" )
+
+lab_troph_2 <- names(lab_troph)
+names(lab_troph_2) <- lab_troph
+
+ggplot(tab_assign_grp) +
+  geom_bar(stat="identity", aes(x=New_trophicMode, y=N_taxa, fill=New_trophicMode)) +
+  xlab("")+
+  ylab("Nombre de taxon") +
+  scale_fill_manual(values=pal_troph, labels=lab_troph) +
+  theme(axis.text.x = element_blank() )+ 
+  guides(fill=guide_legend(title="Groupe trophique"))
+  
