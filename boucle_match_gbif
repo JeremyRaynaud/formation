@@ -1,0 +1,15 @@
+tab_assign <- read.csv("tab_otu_func.csv")
+
+tab_assign$match_gbif_taxa <- NA
+tab_assign$match_gbif_rank <- NA
+
+for(i in 1:nrow(tab_assign)){
+  for(r in c("kingdom","phylum","order","family","genus","acceptedScientificName") ){
+    if( any(str_detect(occ_colombia[,r], tab_assign$Prediction[i]), na.rm=TRUE) ){
+      tab_assign$match_gbif_rank[i] <- r
+      match_gbif <- occ_colombia[,r][str_detect(occ_colombia[,r], tab_assign$Prediction[i])]
+      tab_assign$match_gbif_taxa[i] <- match_gbif[!is.na(match_gbif)][1]
+    }
+  }
+}
+
